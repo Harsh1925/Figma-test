@@ -224,17 +224,27 @@ button {
     "slot-three slot-four";
   gap: 12px;
   animation: slotsEnter 0.28s ease both;
+
+    /* Safari repaint fix */
+
+  position: relative;
+  z-index: 1;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  contain: layout paint;
 }
 
 @keyframes slotsEnter {
   from {
     opacity: 0;
-    transform: translateX(8px);
+    transform: translate3d(6px, 0, 0);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -268,17 +278,26 @@ button {
   border-radius: 18px;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
   animation: detailEnter 0.28s ease both;
+    /* Safari repaint fix */
+
+  position: relative;
+  z-index: 1;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: opacity, transform;
+  contain: layout paint;
 }
 
 @keyframes detailEnter {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translate3d(0, 6px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
