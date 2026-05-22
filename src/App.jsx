@@ -1,4 +1,4 @@
-import HealthDashboard from "./components/HealthDashboard";
+import HealthDashboard from "./components/HealthDashboard/HealthDashboard";
 
 function App() {
   return <HealthDashboard />;
