@@ -47,7 +47,7 @@ button {
 
 .widget-cluster {
   position: absolute;
-  top: 48px;
+  top: 28px;
   right: 58px;
   width: 460px;
 }
@@ -566,23 +566,29 @@ button {
 /* Tablet */
 @media (max-width: 1000px) {
   .outer-frame {
-    padding: 32px;
+    padding: 22px;
   }
 
   .screen-area {
-    min-height: 760px;
+    max-height: 760px;
+    padding: 0px 0px 0px 20px;
   }
 
   .widget-cluster {
     position: static;
     width: 100%;
-    max-width: 460px;
-    margin: 40px auto;
+    max-width: 800px;
+    margin: 20px auto;
+  }
+    .icon-dock {
+    margin-top: 30px;
+  }
+    .stat-slots{
+    margin-top: 30px;
   }
 }
-
-/* Phone */
 @media (max-width: 540px) {
+
   .page {
     padding: 14px;
   }
@@ -596,12 +602,13 @@ button {
   }
 
   .screen-area {
-    min-height: auto;
-    padding: 24px 16px;
-    overflow: hidden;
+    max-height: 1300px;
+    padding: 4px 16px;
+    overflow: visible;
   }
 
   .widget-cluster {
+    position: static;
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
@@ -611,15 +618,17 @@ button {
   .activity-section {
     grid-template-columns: minmax(0, 1fr) 52px;
     column-gap: 10px;
+    margin-bottom: 74px;
   }
 
   .icon-dock {
     width: 52px;
     min-width: 52px;
-    gap: 8px;
+    gap: 15px;
   }
 
-  .icon-dock-btn {
+  .icon-dock-btn,
+  .activity-toggle-icon {
     width: 48px;
     height: 48px;
     flex: 0 0 48px;
@@ -652,6 +661,7 @@ button {
   }
 
   /* Remove hover tooltip on phone screens */
+
   .icon-dock-btn::after,
   .activity-toggle-icon::after,
   .activity-row::after {
