@@ -1,99 +1,15 @@
-import { useMemo, useState } from "react";
-import "./HealthDashboard.css";
-
+import { useState } from "react";
+import { ChevronRight, Eye, EyeOff, ListChecks } from "lucide-react";
 import {
-  ChevronRight,
-  Dumbbell,
-  Eye,
-  EyeOff,
-  Footprints,
-  Heart,
-  ListChecks,
-  Moon,
-} from "lucide-react";
-
-const stats = [
-  {
-    id: "heart",
-    icon: Heart,
-    iconClass: "heart",
-    label: "HEART RATE",
-    value: "60",
-    unit: "bpm",
-    meta: "Resting",
-    detail: "Your resting heart rate is in a calm range today.",
-    tip: "Good recovery signal",
-  },
-  {
-    id: "sleep",
-    icon: Moon,
-    iconClass: "sleep",
-    label: "SLEEP",
-    value: "7.4",
-    unit: "hrs",
-    meta: "↑ 12% this week",
-    detail: "You slept longer than your weekly average.",
-    tip: "Recovery is trending up",
-  },
-  {
-    id: "steps",
-    icon: Footprints,
-    iconClass: "steps",
-    label: "STEPS",
-    value: "8,432",
-    unit: "",
-    meta: "of 10,000 goal",
-    detail: "You are close to today’s movement goal.",
-    tip: "1,568 steps remaining",
-  },
-  {
-    id: "weight",
-    icon: Dumbbell,
-    iconClass: "weight",
-    label: "WEIGHT",
-    value: "115",
-    unit: "lbs",
-    meta: "↓ 1.2 lb this month",
-    detail: "Your monthly weight trend is moving gradually.",
-    tip: "Steady progress",
-  },
-];
-
-const activities = [
-  {
-    icon: Footprints,
-    iconClass: "steps",
-    title: "Morning Run",
-    date: "April 16, 2026",
-    calories: "435 cal",
-    duration: "38 min",
-    note: "Outdoor cardio session with a strong calorie burn.",
-  },
-  {
-    icon: Dumbbell,
-    iconClass: "weight",
-    title: "Strength Training",
-    date: "April 15, 2026",
-    calories: "210 cal",
-    duration: "42 min",
-    note: "Resistance workout focused on strength and consistency.",
-  },
-  {
-    icon: Footprints,
-    iconClass: "steps",
-    title: "Yoga",
-    date: "April 15, 2026",
-    calories: "550 cal",
-    duration: "55 min",
-    note: "Longer mobility session that supports recovery and flexibility.",
-  },
-];
-
-const slotPlacementOrder = ["slot-two", "slot-one", "slot-four", "slot-three"];
+  activities,
+  slotPlacementOrder,
+  stats,
+} from "../../data/dashboardData";
+import "./HealthDashboard.css";
 
 function IconBox({ Icon, type = "default" }) {
   return (
-    <div className={`icon-box ${type}`}>
+    <div className={`icon-box ${type}`} aria-hidden="true">
       <Icon size={16} strokeWidth={3} />
     </div>
   );
@@ -103,17 +19,19 @@ function StatDetailCard({ item, slotNumber, visualSlot, onClose }) {
   const Icon = item.icon;
 
   return (
-    <div className={`stat-detail-card ${item.iconClass} ${visualSlot}`}>
+    <article className={`stat-detail-card ${item.iconClass} ${visualSlot}`}>
       <div className="stat-detail-top">
         <IconBox Icon={Icon} type={item.iconClass} />
+
         <div>
           <span>Slot {slotNumber}</span>
           <p>{item.label}</p>
         </div>
+
         <button
           type="button"
           onClick={onClose}
-          aria-label={`Close ${item.label}`}
+          aria-label={`Close ${item.label} details`}
         >
           ×
         </button>
@@ -121,6 +39,7 @@ function StatDetailCard({ item, slotNumber, visualSlot, onClose }) {
 
       <div className="stat-value-row">
         <span className="stat-value">{item.value}</span>
+
         {item.unit && (
           <span className={`stat-unit ${item.iconClass}`}>{item.unit}</span>
         )}
@@ -129,17 +48,14 @@ function StatDetailCard({ item, slotNumber, visualSlot, onClose }) {
       <p className={`stat-meta ${item.iconClass}`}>{item.meta}</p>
       <p className="stat-detail">{item.detail}</p>
       <div className={`stat-tip ${item.iconClass}`}>{item.tip}</div>
-    </div>
+    </article>
   );
 }
 
-function StatsSection() {
+function StatsSection({ isActivityExpanded, onToggleActivity }) {
   const [selectedStats, setSelectedStats] = useState([]);
 
-  const allStatsOpen = useMemo(
-    () => selectedStats.length === stats.length,
-    [selectedStats.length],
-  );
+  const allStatsOpen = selectedStats.length === stats.length;
 
   const getStatById = (id) => stats.find((item) => item.id === id);
 
@@ -160,8 +76,8 @@ function StatsSection() {
   };
 
   return (
-    <div className="stats-section">
-      <div className="icon-dock" aria-label="Health metric icons">
+    <section className="stats-section" aria-label="Health metrics">
+      <div className="icon-dock" aria-label="Health and activity controls">
         {stats.map((item) => {
           const Icon = item.icon;
           const active = selectedStats.includes(item.id);
@@ -173,6 +89,7 @@ function StatsSection() {
               className={`icon-dock-btn ${active ? "active" : ""}`}
               onClick={() => handleIconClick(item.id)}
               data-tooltip={`${active ? "Remove" : "Show"} ${item.label.toLowerCase()}`}
+              aria-label={`${active ? "Remove" : "Show"} ${item.label.toLowerCase()} details`}
               aria-pressed={active}
             >
               <IconBox Icon={Icon} type={item.iconClass} />
@@ -185,9 +102,32 @@ function StatsSection() {
           className={`icon-dock-btn show-all-icon ${allStatsOpen ? "active" : ""}`}
           onClick={toggleAllStats}
           data-tooltip={allStatsOpen ? "Hide all details" : "Show all details"}
+          aria-label={
+            allStatsOpen ? "Hide all metric details" : "Show all metric details"
+          }
           aria-pressed={allStatsOpen}
         >
           <IconBox Icon={allStatsOpen ? EyeOff : Eye} type="show-all" />
+        </button>
+
+        <button
+          type="button"
+          className={`icon-dock-btn activity-toggle-icon ${
+            isActivityExpanded ? "active" : ""
+          }`}
+          onClick={onToggleActivity}
+          data-tooltip={
+            isActivityExpanded ? "Hide weekly activity" : "Show weekly activity"
+          }
+          aria-label={
+            isActivityExpanded ? "Hide weekly activity" : "Show weekly activity"
+          }
+          aria-pressed={isActivityExpanded}
+        >
+          <IconBox
+            Icon={isActivityExpanded ? EyeOff : ListChecks}
+            type="activity"
+          />
         </button>
       </div>
 
@@ -196,6 +136,8 @@ function StatsSection() {
           {selectedStats.map((selectedId, index) => {
             const item = getStatById(selectedId);
             const visualSlot = slotPlacementOrder[index];
+
+            if (!item) return null;
 
             return (
               <StatDetailCard
@@ -209,7 +151,7 @@ function StatsSection() {
           })}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -245,6 +187,7 @@ function ActivityRow({ item, isOpen, onToggle, isLast }) {
           <span>Duration</span>
           <strong>{item.duration}</strong>
         </div>
+
         <p>{item.note}</p>
       </div>
     </button>
@@ -258,7 +201,7 @@ function ActivityList() {
   const allOpen = showAllActivities;
 
   return (
-    <div className={`activity-list ${allOpen ? "all-open" : ""}`}>
+    <section className={`activity-list ${allOpen ? "all-open" : ""}`}>
       <div className="activity-header">
         <div>
           <h3>This week</h3>
@@ -295,46 +238,41 @@ function ActivityList() {
           />
         );
       })}
-    </div>
+    </section>
   );
 }
 
-function ActivitySection() {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+function ActivitySection({ isExpanded }) {
   return (
-    <div
+    <section
       className={`activity-section ${isExpanded ? "expanded" : "collapsed"}`}
+      aria-label="Weekly activity"
     >
       <div className="activity-content-stack">
         {isExpanded && <ActivityList />}
       </div>
-
-      <button
-        type="button"
-        className={`activity-toggle-icon ${isExpanded ? "active" : ""}`}
-        onClick={() => setIsExpanded((current) => !current)}
-        data-tooltip={
-          isExpanded ? "Hide weekly activity" : "Show weekly activity"
-        }
-        aria-pressed={isExpanded}
-      >
-        <IconBox Icon={isExpanded ? EyeOff : ListChecks} type="activity" />
-      </button>
-    </div>
+    </section>
   );
 }
 
 export default function HealthDashboard() {
+  const [isActivityExpanded, setIsActivityExpanded] = useState(false);
+
   return (
     <main className="page">
       <div className="figma-label">Screen Recreation</div>
 
-      <section className="outer-frame">
+      <section className="outer-frame" aria-label="Figma screen recreation">
         <div className="screen-area">
           <div className="widget-cluster">
-            <StatsSection />
-            <ActivitySection />
+            <StatsSection
+              isActivityExpanded={isActivityExpanded}
+              onToggleActivity={() =>
+                setIsActivityExpanded((current) => !current)
+              }
+            />
+
+            <ActivitySection isExpanded={isActivityExpanded} />
           </div>
         </div>
       </section>
